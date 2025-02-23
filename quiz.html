@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis SMAK Kesuma Mataram</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('4k-wallpaper.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 60%;
+            background: rgba(4, 30, 66, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .answer-btn {
+            background-color: #FFD700;
+            color: #041E42;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        .answer-btn:hover {
+            background-color: #FFC107;
+        }
+        .correct {
+            background-color: #2ecc71 !important;
+        }
+        .wrong {
+            background-color: #e74c3c !important;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #555;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            width: 0;
+            background-color: #FFD700;
+            transition: width 0.5s;
+        }
+        .score {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        .correct-answer {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #FFD700;
+        }
+        button {
+            background-color: #041E42;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #00274E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="title-screen">
+        <h1>Selamat Datang di Kuis SMAK Kesuma Mataram</h1>
+        <button onclick="startQuiz()">Mulai Kuis</button>
+    </div>
+    
+    <div class="container" id="quiz-container" style="display: none;">
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <h2 id="question"></h2>
+        <div class="button-container" id="options"></div>
+        <p class="score">Skor: <span id="score">0</span></p>
+        <p id="correct-answer" class="correct-answer" style="display: none;"></p>
+        <button onclick="returnToTitle()">Kembali ke Menu Utama</button>
+    </div>
+    
+    <script>
+        const questions = [
+            { q: "Apa kepanjangan dari SMAK Kesuma Mataram?", options: ["Sekolah Menengah Agama Katolik Kesuma", "Sekolah Menengah Atas Katolik Kesuma", "Sekolah Menengah Akhir Kesuma Mataram", "Sekolah Menengah Anak Kesuma"], answer: 1 },
+            { q: "Apa arti dari kata 'Kesuma' dalam nama sekolah tersebut?", options: ["Kebanggaan Suluh Masyarakat", "Kejayaan Siswa Mandiri", "Kecerdasan Suluh Masyarakat", "Kemajuan Siswa Mataram"], answer: 2 },
+            { q: "Di mana lokasi SMAK Kesuma Mataram?", options: ["Jl. Pejanggik, Cakranegara, Mataram", "Jl. Sudirman, Mataram", "Jl. Veteran, Cakranegara", "Jl. Raya Ampenan, Mataram"], answer: 0 },
+            { q: "Apa moto dari SMAK Kesuma Mataram?", options: ["Disiplin, Jujur, Terampil, Mandiri", "Pintar, Rajin, Berani, Jujur", "Berani, Jujur, Mandiri, Kreatif", "Cerdas, Tangguh, Inovatif, Disiplin"], answer: 0 },
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            document.getElementById("title-screen").style.display = "none";
+            document.getElementById("quiz-container").style.display = "block";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            let questionObj = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = questionObj.q;
+            let optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+            questionObj.options.forEach((option, index) => {
+                let button = document.createElement("button");
+                button.innerText = option;
+                button.classList.add("answer-btn");
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            let correctIndex = questions[currentQuestionIndex].answer;
+            if (selectedIndex === correctIndex) {
+                score += 10;
+            } else {
+                score -= 5;
+                document.getElementById("correct-answer").innerText = "Jawaban benar: " + questions[currentQuestionIndex].options[correctIndex];
+                document.getElementById("correct-answer").style.display = "block";
+            }
+            document.getElementById("score").innerText = score;
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(() => {
+                    document.getElementById("correct-answer").style.display = "none";
+                    loadQuestion();
+                }, 2000);
+            } else {
+                alert("Kuis selesai! Skor akhir: " + score);
+                returnToTitle();
+            }
+        }
+
+        function returnToTitle() {
+            document.getElementById("quiz-container").style.display = "none";
+            document.getElementById("title-screen").style.display = "block";
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById("score").innerText = score;
+        }
+    </script>
+</body>
+</html>
+
+
